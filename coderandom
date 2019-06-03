@@ -1,0 +1,36 @@
+import sys
+import re
+from BeautifulSoup import BeautifulSoup, NavigableString
+import requests
+import urllib
+import urllib2
+import codecs
+import operator
+from StringIO import StringIO
+import gzip
+
+article='Special:Random/Book'
+article=re.sub(' ','_', article)
+num=200
+ttllen=2
+i=0
+x=re.compile("^:wikt|outline|portal|list|sexual|latin|history|glossary|index|book|wikipedia|wikibooks|image|file|help|template|category|special:|english|language|\(disambiguation\)$")
+links=[]
+while (i<num):
+    opener = urllib2.build_opener()
+    opener.addheaders = [('User-agent', 'Mozilla/5.0')] #wikipedia needs this
+    resource = opener.open("http://en.wikipedia.org/wiki/" + article)
+    data = resource.read()
+    resource.close()
+    soup = BeautifulSoup(data)
+    #if soup.find('a', {'title':'Edit section: See also'}):
+    title=soup.find('h1',{'id':'firstHeading'})
+    a=title.text
+    #a=re.sub('\(.*?\)','',a)
+    a=re.sub('Book:', '',a)
+    if a.count(' ')<ttllen:
+        if x.findall(a.lower())==[]:
+                links.append(a)
+                print(a)
+                
+i+=1
